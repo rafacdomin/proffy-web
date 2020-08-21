@@ -57,7 +57,14 @@ const Profile: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
   const [userData, setUserData] = useState({} as UserData);
-  const [scheduleItems, setScheduleItems] = useState<Array<ScheduleItem>>([]);
+  const [scheduleItems, setScheduleItems] = useState<Array<ScheduleItem>>([
+    {
+      id: 0,
+      week_day: 0,
+      from: '',
+      to: '',
+    },
+  ]);
 
   useEffect(() => {
     async function getUserData() {
