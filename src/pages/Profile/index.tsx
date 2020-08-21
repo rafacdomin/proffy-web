@@ -71,7 +71,9 @@ const Profile: React.FC = () => {
       const response = await api.get('/users');
 
       setUserData(response.data);
-      setScheduleItems(response.data.schedule);
+      if (!!response.data.schedule) {
+        setScheduleItems(response.data.schedule);
+      }
 
       formRef.current?.setData({
         cost: response.data?.cost,
