@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import * as Yup from 'yup';
 import { Form } from '@unform/web';
 import { FormHandles, SubmitHandler } from '@unform/core';
 import Input from '../../components/Input';
@@ -90,26 +91,63 @@ const Profile: React.FC = () => {
   }, [user]);
 
   const handleSubmit: SubmitHandler<FormData> = async (data) => {
-    const { bio, avatar, email, name, lastname, whatsapp } = data;
+    try {
+      const schema = Yup.object().shape({
+        name: Yup.string(),
+        lastname: Yup.string(),
+        whatsapp: Yup.string(),
+        email: Yup.string(),
+        avatar: Yup.string(),
+        bio: Yup.string().max(255),
+        subject: Yup.string(),
+        cost: Yup.number(),
+        schedule: Yup.array().of(
+          Yup.object().shape({
+            week_day: Yup.number(),
+            from: Yup.string(),
+            to: Yup.string(),
+          })
+        ),
+      });
 
-    await api.put('/users', {
-      name: `${name} ${lastname}`,
-      email,
-      whatsapp,
-      bio,
-      avatar,
-    });
+      await schema.validate(data, {
+        abortEarly: false,
+      });
 
-    const { subject, cost, schedule } = data;
+      const { bio, avatar, email, name, lastname, whatsapp } = data;
 
-    await api.put('/classes', {
-      subject,
-      cost,
-      schedule,
-    });
+      await api.put('/users', {
+        name: `${name} ${lastname}`,
+        email,
+        whatsapp,
+        bio,
+        avatar,
+      });
 
-    alert('Cadastro atualizado com sucesso');
-    history.push('/');
+      if (!!userData.subject) {
+        const { subject, cost, schedule } = data;
+
+        await api.put('/classes', {
+          subject,
+          cost,
+          schedule,
+        });
+      }
+
+      alert('Cadastro atualizado com sucesso');
+      history.push('/');
+    } catch (err) {
+      const validationErrors: any = {};
+
+      if (err instanceof Yup.ValidationError) {
+        // validation fails
+        err.inner.forEach((error) => {
+          validationErrors[error.path] = error.message;
+        });
+
+        formRef.current?.setErrors(validationErrors);
+      }
+    }
   };
 
   function addNewScheduleItem() {
@@ -170,77 +208,83 @@ const Profile: React.FC = () => {
               <Textarea name="bio" label="Biografia" />
             </fieldset>
 
-            <fieldset>
-              <legend>Sobre a aula</legend>
+            {!userData.subject ? (
+              ''
+            ) : (
+              <>
+                <fieldset>
+                  <legend>Sobre a aula</legend>
 
-              <div className="subjectfields">
-                <Select
-                  name="subject"
-                  value={userData.subject}
-                  label="Matéria"
-                  options={[
-                    { value: 'Artes', label: 'Artes' },
-                    { value: 'História', label: 'História' },
-                    { value: 'Português', label: 'Português' },
-                    { value: 'Inglês', label: 'Inglês' },
-                    { value: 'Geografia', label: 'Geografia' },
-                    { value: 'Matemática', label: 'Matemática' },
-                    { value: 'Física', label: 'Física' },
-                    { value: 'Química', label: 'Química' },
-                    { value: 'Biologia', label: 'Biologia' },
-                    { value: 'Filosofia', label: 'Filosofia' },
-                  ]}
-                />
+                  <div className="subjectfields">
+                    <Select
+                      name="subject"
+                      value={userData.subject}
+                      label="Matéria"
+                      options={[
+                        { value: 'Artes', label: 'Artes' },
+                        { value: 'História', label: 'História' },
+                        { value: 'Português', label: 'Português' },
+                        { value: 'Inglês', label: 'Inglês' },
+                        { value: 'Geografia', label: 'Geografia' },
+                        { value: 'Matemática', label: 'Matemática' },
+                        { value: 'Física', label: 'Física' },
+                        { value: 'Química', label: 'Química' },
+                        { value: 'Biologia', label: 'Biologia' },
+                        { value: 'Filosofia', label: 'Filosofia' },
+                      ]}
+                    />
 
-                <Input name="cost" label="Custo da sua hora/aula" />
-              </div>
-            </fieldset>
+                    <Input name="cost" label="Custo da sua hora/aula" />
+                  </div>
+                </fieldset>
 
-            <fieldset>
-              <legend>
-                Horários disponíveis
-                <button type="button" onClick={addNewScheduleItem}>
-                  + Novo horário
-                </button>
-              </legend>
-              {scheduleItems.map((schedule, index) => (
-                <div key={schedule.id} className="schedule-item">
-                  <Select
-                    name={`schedule[${index}].week_day`}
-                    label="Dia da semana"
-                    value={String(schedule.week_day)}
-                    options={[
-                      { value: 0, label: label_week_day[0] },
-                      { value: 1, label: label_week_day[1] },
-                      { value: 2, label: label_week_day[2] },
-                      { value: 3, label: label_week_day[3] },
-                      { value: 4, label: label_week_day[4] },
-                      { value: 5, label: label_week_day[5] },
-                      { value: 6, label: label_week_day[6] },
-                    ]}
-                  />
-                  <Input
-                    name={`schedule[${index}].from`}
-                    value={schedule.from}
-                    label="Das"
-                    type="time"
-                  />
-                  <Input
-                    value={schedule.to}
-                    name={`schedule[${index}].to`}
-                    label="Até"
-                    type="time"
-                  />
+                <fieldset>
+                  <legend>
+                    Horários disponíveis
+                    <button type="button" onClick={addNewScheduleItem}>
+                      + Novo horário
+                    </button>
+                  </legend>
+                  {scheduleItems.map((schedule, index) => (
+                    <div key={schedule.id} className="schedule-item">
+                      <Select
+                        name={`schedule[${index}].week_day`}
+                        label="Dia da semana"
+                        value={String(schedule.week_day)}
+                        options={[
+                          { value: 0, label: label_week_day[0] },
+                          { value: 1, label: label_week_day[1] },
+                          { value: 2, label: label_week_day[2] },
+                          { value: 3, label: label_week_day[3] },
+                          { value: 4, label: label_week_day[4] },
+                          { value: 5, label: label_week_day[5] },
+                          { value: 6, label: label_week_day[6] },
+                        ]}
+                      />
+                      <Input
+                        name={`schedule[${index}].from`}
+                        value={schedule.from}
+                        label="Das"
+                        type="time"
+                      />
+                      <Input
+                        value={schedule.to}
+                        name={`schedule[${index}].to`}
+                        label="Até"
+                        type="time"
+                      />
 
-                  <button
-                    onClick={() => removeScheduleItem(index)}
-                    type="button"
-                  >
-                    Excluir horário
-                  </button>
-                </div>
-              ))}
-            </fieldset>
+                      <button
+                        onClick={() => removeScheduleItem(index)}
+                        type="button"
+                      >
+                        Excluir horário
+                      </button>
+                    </div>
+                  ))}
+                </fieldset>
+              </>
+            )}
 
             <FormFooter>
               <p>

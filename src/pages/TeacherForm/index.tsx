@@ -17,7 +17,6 @@ import { TeacherFormPage, PageContent, FormFields, FormFooter } from './styles';
 import rocket from '../../assets/images/icons/rocket.svg';
 
 interface ScheduleItem {
-  id: number;
   week_day: number;
   from: string;
   to: string;
@@ -47,7 +46,6 @@ export default function TeacherForm() {
 
   const [scheduleItems, setScheduleItems] = useState<Array<ScheduleItem>>([
     {
-      id: 0,
       week_day: 0,
       from: '',
       to: '',
@@ -60,7 +58,7 @@ export default function TeacherForm() {
 
       const schema = Yup.object().shape({
         whatsapp: Yup.string().required(),
-        bio: Yup.string().required(),
+        bio: Yup.string().max(255).required(),
         subject: Yup.string().required(),
         cost: Yup.number().required('cost is required'),
         schedule: Yup.array().of(
@@ -76,7 +74,6 @@ export default function TeacherForm() {
         abortEarly: false,
       });
 
-      console.log('validate');
       const { whatsapp, bio } = data;
 
       await api.put('/users', {
@@ -86,7 +83,7 @@ export default function TeacherForm() {
 
       const { subject, cost, schedule } = data;
 
-      await api.put('/classes', {
+      await api.post('/classes', {
         subject,
         cost,
         schedule,
@@ -180,7 +177,7 @@ export default function TeacherForm() {
                   <Select
                     name={`schedule[${index}].week_day`}
                     label="Dia da semana"
-                    value={String(schedule.week_day)}
+                    value={schedule.week_day}
                     options={[
                       { value: 0, label: label_week_day[0] },
                       { value: 1, label: label_week_day[1] },

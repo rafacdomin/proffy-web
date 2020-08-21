@@ -17,11 +17,14 @@ import { LandingPage, LandingContent, Footer, Content } from './styles';
 function Landing() {
   const { signOut, user } = useAuth();
   const [totalConnections, setTotalConnections] = useState(0);
+  const [avatar, setAvatar] = useState(null);
 
   useEffect(() => {
     async function getConnections() {
       const { data } = await api.get('/connections');
+      const response = await api.get('/users');
 
+      setAvatar(response.data.avatar);
       setTotalConnections(data.total);
     }
 
@@ -38,7 +41,7 @@ function Landing() {
         <Link to="/profile" id="user">
           <img
             src={
-              user?.avatar ||
+              avatar ||
               `https://avatars.dicebear.com/api/initials/${user?.name}.svg`
             }
             alt="Avatar de usuário"

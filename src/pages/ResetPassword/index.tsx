@@ -20,8 +20,6 @@ export default function ResetPassword() {
   const history = useHistory();
 
   const handleSubmit: SubmitHandler<FormData> = (data) => {
-    console.log(data);
-
     history.push('/reset-password-success');
   };
 

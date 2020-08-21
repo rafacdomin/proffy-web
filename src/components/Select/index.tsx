@@ -12,7 +12,7 @@ interface Props extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   name: string;
   options: Array<Data>;
-  value?: string;
+  value?: string | number;
 }
 
 const Select: React.FC<Props> = ({
