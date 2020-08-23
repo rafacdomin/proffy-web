@@ -85,7 +85,7 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
       <p>{teacher.bio}</p>
 
       <DayList>
-        <RenderDay name="Sábado" value={0} schedule={teacher.schedule} />
+        <RenderDay name="Domingo" value={0} schedule={teacher.schedule} />
         <RenderDay name="Segunda" value={1} schedule={teacher.schedule} />
         <RenderDay name="Terça" value={2} schedule={teacher.schedule} />
         <RenderDay name="Quarta" value={3} schedule={teacher.schedule} />
