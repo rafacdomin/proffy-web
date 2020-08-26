@@ -23,6 +23,10 @@
   <a href="#author">Author</a>
 </p>
 
+<p align="center">
+     <a href="https://app.netlify.com/sites/myproffy/deploys" target="_blank"><img src="https://api.netlify.com/api/v1/badges/553c749d-5122-4b43-a8a8-c8e6a84310e5/deploy-status" alt="Run in Netlify"></a>
+</p>
+
 ## About
 
 ReactJS project developed on [RocketSeat NexLevelWeek](https://nextlevelweek.com/). This project is based on an application for connect students and teachers.
@@ -37,25 +41,30 @@ This project was developed with the following technologies:
 - [Typescript](https://www.typescriptlang.org/)
 - [React Router v5](https://github.com/ReactTraining/react-router)
 - [Axios](https://github.com/axios/axios)
+- [styled-components](https://styled-components.com/)
+- [Yup](https://www.npmjs.com/package/yup)
+- [Unform](https://unform.dev/)
 
 ## How To Use
 
-To clone and run this application, you'll need [Git](https://git-scm.com), [Node.js](https://nodejs.org/) + [Yarn v1](https://classic.yarnpkg.com/) installed on your computer. From your command line:
+To clone and run this application, you'll need installed on your computer:
+- [Git](https://git-scm.com)
+- [Node.js](https://nodejs.org/)
+- [Yarn v1](https://classic.yarnpkg.com/) 
+
+To run the frontend Web:
 
 ```bash
-# Clone this repository
-$ git clone https://github.com/rafacdomin/proffy
+# Clone the Web repository
+$ git clone https://github.com/rafacdomin/proffy-web
 
-# Go into the repository
-$ cd proffy
+# Go into the web folder
+$ cd proffy-web
 ```
 
-To run the frontend web:
+Change the `baseURL` in `src/services/api.ts` to http:localhost:3333 or to where your server is running.
 
 ```bash
-# Go into the web folder
-$ cd web
-
 # Install dependencies
 $ yarn
 
